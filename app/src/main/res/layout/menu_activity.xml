@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff8a5">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Treasure Hunt"
+        android:id="@+id/textView"
+        android:textColor="#673006"
+        android:textSize="40dp"
+        android:shadowColor="#000000"
+        android:layout_gravity="center_horizontal" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_marginTop="42dp"
+        android:background="@mipmap/ic_launcher"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:text="Find a treasure"
+        android:id="@+id/buttonFind"
+        android:layout_below="@+id/imageView"
+        android:layout_marginTop="52dp"
+        android:layout_alignRight="@+id/buttonDownload"
+        android:layout_alignEnd="@+id/buttonDownload"
+        android:layout_alignLeft="@+id/buttonDownload"
+        android:layout_alignStart="@+id/buttonDownload"
+        android:background="#673006"
+        android:textColor="#ffffff"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:text="Hide a treasure"
+        android:id="@+id/buttonHide"
+        android:textColor="#ffffff"
+        android:background="#673006"
+        android:layout_below="@+id/buttonFind"
+        android:layout_alignLeft="@+id/buttonDownload"
+        android:layout_alignStart="@+id/buttonDownload"
+        android:layout_marginTop="22dp"
+        android:layout_alignRight="@+id/buttonFind"
+        android:layout_alignEnd="@+id/buttonFind"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:text="Download a treasure hunt"
+        android:id="@+id/buttonDownload"
+        android:textColor="#ffffff"
+        android:background="#673006"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/buttonHide"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
