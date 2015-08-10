@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -39,6 +40,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
     GoogleMap myMap;
     Hunt myHunt;
     boolean isRecording;
+    Polygon polygon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +65,17 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
         myHunt = new Hunt();
         myHunt.forme = new ArrayList<>();
 
+
         LocationListener ll = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 actualLocation = location;
 
                 LatLng latlngmylocation = new LatLng(actualLocation.getLatitude(), actualLocation.getLongitude());
-                Toast.makeText(getApplicationContext(), latlngmylocation.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), latlngmylocation.toString(), Toast.LENGTH_SHORT).show();
                 myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlngmylocation, 16));
 
-                if(isRecording) {
+                if (isRecording) {
                     myHunt.addpoint(location.getLatitude(), location.getLongitude());
 
                     PolylineOptions rectOptions = new PolylineOptions();
@@ -108,7 +111,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isRecording=true;
+                isRecording = true;
                 start.setEnabled(false);
                 start.setBackgroundColor(Color.GRAY);
                 end.setEnabled(true);
@@ -126,30 +129,44 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
                     rectOptions.add(point);
                 }
 
-                Polygon polygon = myMap.addPolygon(rectOptions);
-                polygon.setFillColor(Color.argb(100,255,255,150));
+                polygon = myMap.addPolygon(rectOptions);
+                polygon.setFillColor(Color.argb(100, 255, 255, 150));
                 polygon.setStrokeColor(Color.argb(255, 100, 50, 0));
                 end.setEnabled(true);
                 end.setBackgroundColor(Color.GRAY);
                 place.setEnabled(true);
                 place.setBackgroundColor(Color.argb(255, 100, 50, 0));
+                Toast.makeText(getApplicationContext(), "taille :  "+String.valueOf(myHunt.forme.size()), Toast.LENGTH_SHORT).show();
             }
         });
 
         place.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myHunt.setTreasure(actualLocation);
-                myMap.addMarker(new MarkerOptions()
-                        .title("Treasure")
-                        .snippet("Your place")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.treasure))
-                        .position(new LatLng(actualLocation.getLatitude(), actualLocation.getLongitude())));
-                place.setEnabled(false);
-                place.setBackgroundColor(Color.GRAY);
-                save.setEnabled(true);
-                save.setBackgroundColor(Color.argb(255,100,50,0));
+                LatLng temp = new LatLng(actualLocation.getLatitude(), actualLocation.getLongitude());
+                if (myHunt.pointInPolygon(temp, polygon)) {
+                    myHunt.setTreasure(actualLocation);
+                    myMap.addMarker(new MarkerOptions()
+                            .title("Treasure")
+                            .snippet("Your place")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.treasure))
+                            .position(new LatLng(actualLocation.getLatitude(), actualLocation.getLongitude())));
+                    place.setEnabled(false);
+                    place.setBackgroundColor(Color.GRAY);
+                    save.setEnabled(true);
+                    save.setBackgroundColor(Color.argb(255, 100, 50, 0));
+                } else {
+                    Toast.makeText(getApplicationContext(), "The treasure is not is the area !", Toast.LENGTH_SHORT).show();
+                }
 
+            }
+        });
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myHunt.saveHunt(Environment.getExternalStorageDirectory().getPath() + "/treasurehunt/", myHunt);
+                Toast.makeText(getApplicationContext(), "Hunt saved", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -171,7 +188,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
             LatLng latlngmylocation = new LatLng(actualLocation.getLatitude(), actualLocation.getLongitude());
             Toast.makeText(getApplicationContext(), latlngmylocation.toString(), Toast.LENGTH_SHORT).show();
             map.moveCamera(CameraUpdateFactory.newLatLng(latlngmylocation));
-        }catch(NullPointerException npe){
+        } catch (NullPointerException npe) {
             Toast.makeText(getApplicationContext(), "Unknown location", Toast.LENGTH_SHORT).show();
         }
 
