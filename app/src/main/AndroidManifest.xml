@@ -42,6 +42,8 @@
         <activity
             android:name="com.via.paul.treasurehunt.HuntSelectionActivity"
             android:label="Select a hunt to play" />
+        <activity android:name=".DownloadHuntActivity"/>
+        <activity android:name=".GameActivity"/>
     </application>
 
 </manifest>

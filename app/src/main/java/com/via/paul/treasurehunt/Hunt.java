@@ -1,6 +1,7 @@
 package com.via.paul.treasurehunt;
 
 import android.location.Location;
+import android.os.Environment;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -94,7 +95,7 @@ public class Hunt implements Serializable{
 
 
         try{
-            final FileOutputStream fichier = new FileOutputStream(cheminFic+"hunt.hunt");
+            final FileOutputStream fichier = new FileOutputStream(Environment.getExternalStorageDirectory().getPath() + "/treasurehunt/" +cheminFic+".hunt");
             oos = new ObjectOutputStream(fichier);
             oos.writeObject(hunt);
         }catch (final java.io.IOException e){
@@ -102,7 +103,7 @@ public class Hunt implements Serializable{
         } finally {
             try {
                 if (oos != null) {
-                    oos.flush();
+                    //oos.flush();
                     oos.close();
                 }
             } catch (final IOException ex) {
@@ -111,27 +112,53 @@ public class Hunt implements Serializable{
         }
     }
 
-    public void loadHunt(String cheminFic){
+    public static Hunt loadHunt(String cheminFic){
         ObjectInputStream ois = null;
 
-        try {
-            final FileInputStream fichier = new FileInputStream(cheminFic);
-            ois = new ObjectInputStream(fichier);
-            ois.readObject();
+        Hunt  hunt=null;
+        try  {
+            FileInputStream  fin=new FileInputStream(cheminFic);
+            ObjectInputStream  oin=new ObjectInputStream(fin);
+            hunt=(Hunt)oin.readObject();
 
-        } catch (final java.io.IOException e) {
-            e.printStackTrace();
-        } catch (final ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (ois != null) {
-                    ois.close();
-                }
-            } catch (final IOException ex) {
-                ex.printStackTrace();
+
+            Location tempLoc = new Location("");
+            tempLoc.setLatitude(hunt.latitudeTreasure);
+            tempLoc.setLongitude(hunt.longitudeTreasure);
+            hunt.setTreasure(tempLoc);
+
+
+            hunt.forme = new ArrayList<>(hunt.lats.size());
+
+            int i;
+
+            for (i=0; i<hunt.lats.size(); i++){
+                hunt.forme.add(i, new LatLng(0.0,0.0));
             }
+
+            for(i=0; i<hunt.lats.size(); i++){
+                hunt.forme.set(i, new LatLng(hunt.lats.get(i), hunt.lngs.get(i)));
+            }
+
+
+            oin.close();
+            fin.close();
+        }catch(ClassNotFoundException  nfe) {
+            nfe.printStackTrace();
+        }  catch(IOException ioe) {
+            ioe.printStackTrace();
         }
+        return hunt;
+//
+//        this.Treasure = new Location("");
+//        this.Treasure.setLatitude(this.latitudeTreasure);
+//        this.Treasure.setLatitude(this.longitudeTreasure);
+
+
+
+
+
+
     }
 
     public boolean pointInPolygon(LatLng point, Polygon polygon) {

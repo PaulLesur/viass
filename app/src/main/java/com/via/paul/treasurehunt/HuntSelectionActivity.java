@@ -1,5 +1,6 @@
 package com.via.paul.treasurehunt;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -45,10 +46,12 @@ public class HuntSelectionActivity extends AppCompatActivity {
             }
         }
 
-        huntList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        huntList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                return false;
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(HuntSelectionActivity.this, GameActivity.class);
+                i.putExtra("hunt", (String) huntList.getItemAtPosition(position));
+                startActivity(i);
             }
         });
 

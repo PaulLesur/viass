@@ -1,7 +1,9 @@
 package com.via.paul.treasurehunt;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -9,8 +11,10 @@ import android.location.LocationManager;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,7 +36,7 @@ import java.util.ArrayList;
 
 public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private GoogleMap mMap;
     Button start, end, place, save;
     LocationManager lm;
     Location actualLocation;
@@ -41,6 +45,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
     Hunt myHunt;
     boolean isRecording;
     Polygon polygon;
+    LocationListener ll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +71,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
         myHunt.forme = new ArrayList<>();
 
 
-        LocationListener ll = new LocationListener() {
+        ll = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 actualLocation = location;
@@ -136,7 +141,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
                 end.setBackgroundColor(Color.GRAY);
                 place.setEnabled(true);
                 place.setBackgroundColor(Color.argb(255, 100, 50, 0));
-                Toast.makeText(getApplicationContext(), "taille :  "+String.valueOf(myHunt.forme.size()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "taille :  " + String.valueOf(myHunt.forme.size()), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -165,8 +170,7 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myHunt.saveHunt(Environment.getExternalStorageDirectory().getPath() + "/treasurehunt/", myHunt);
-                Toast.makeText(getApplicationContext(), "Hunt saved", Toast.LENGTH_SHORT).show();
+                showSaveDialog();
             }
         });
 
@@ -174,6 +178,13 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, ll);
 
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ll = null;
+        lm = null;
     }
 
     @Override
@@ -193,4 +204,44 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
         }
 
     }
+
+
+    protected void showSaveDialog() {
+
+        //Button button = (Button) findViewById(R.id.buttonOk);
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(HuntCreatorActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.input_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(HuntCreatorActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final EditText name = (EditText) promptView.findViewById(R.id.name);
+        final EditText location = (EditText) promptView.findViewById(R.id.location);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (!"".equals(name.getText().toString()) && !"".equals(location.getText().toString())) {
+                            myHunt.setName(name.getText().toString());
+                            myHunt.setLieu(location.getText().toString());
+                            myHunt.saveHunt(myHunt.getName()+", "+ myHunt.getLieu(), myHunt);
+                            Toast.makeText(getApplicationContext(), "Hunt saved", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Please write a name and a location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+
 }
