@@ -1,6 +1,7 @@
 package com.via.paul.treasurehunt;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class HuntSelectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.hunt_selection_layout);
 
+        Toast.makeText(getApplicationContext(), "Long click on a hunt to upload it to the server", Toast.LENGTH_SHORT).show();
+
         gameDirectory = Environment.getExternalStorageDirectory().getPath() + "/treasurehunt";
 
 
@@ -55,9 +58,42 @@ public class HuntSelectionActivity extends AppCompatActivity {
             }
         });
 
+        huntList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ftpUploadFile fuf = new ftpUploadFile();
+                fuf.execute((String)huntList.getItemAtPosition(position));
+                Toast.makeText(getApplicationContext(), "Treasure hunt uploaded", Toast.LENGTH_SHORT).show();
+
+                return false;
+            }
+        });
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, hunts);
         huntList.setAdapter(adapter);
     }
+
+    public class ftpUploadFile extends AsyncTask<String, Void, Void> {
+
+        MyFTPClient ftp;
+        ArrayList<String>list;
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String hunt = params[0];
+            ftp = new MyFTPClient();
+            ftp.ftpConnect("abbaye.noip.me", "hunt", "treasure", 21);
+            ftp.ftpChangeDirectory("/home/hunt/hunts/");
+            ftp.ftpUpload(Environment.getExternalStorageDirectory().getPath() + "/treasurehunt/" +hunt + ".hunt", hunt + ".hunt", "/home/hunt/hunts/", getApplicationContext());
+            ftp.ftpDisconnect();
+
+            return null;
+        }
+    }
+
+
+
 }
 

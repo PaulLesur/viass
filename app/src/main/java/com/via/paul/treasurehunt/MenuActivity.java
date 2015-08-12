@@ -55,7 +55,7 @@ public class MenuActivity extends Activity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Download a treasure", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Download a treasure", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(MenuActivity.this, DownloadHuntActivity.class);
                 startActivity(i);
             }
