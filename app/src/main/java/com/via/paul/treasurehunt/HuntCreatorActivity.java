@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -133,15 +134,20 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
                 for (LatLng point : myHunt.getForme()) {
                     rectOptions.add(point);
                 }
-
-                polygon = myMap.addPolygon(rectOptions);
-                polygon.setFillColor(Color.argb(100, 255, 255, 150));
-                polygon.setStrokeColor(Color.argb(255, 100, 50, 0));
-                end.setEnabled(true);
-                end.setBackgroundColor(Color.GRAY);
-                place.setEnabled(true);
-                place.setBackgroundColor(Color.argb(255, 100, 50, 0));
-                Toast.makeText(getApplicationContext(), "taille :  " + String.valueOf(myHunt.forme.size()), Toast.LENGTH_SHORT).show();
+                try {
+                    polygon = myMap.addPolygon(rectOptions);
+                    polygon.setFillColor(Color.argb(100, 255, 255, 150));
+                    polygon.setStrokeColor(Color.argb(255, 100, 50, 0));
+                    end.setEnabled(true);
+                    end.setBackgroundColor(Color.GRAY);
+                    place.setEnabled(true);
+                    place.setBackgroundColor(Color.argb(255, 100, 50, 0));
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "Error !", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(HuntCreatorActivity.this, MenuActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(i);
+                }
             }
         });
 
@@ -224,8 +230,11 @@ public class HuntCreatorActivity extends FragmentActivity implements OnMapReadyC
                         if (!"".equals(name.getText().toString()) && !"".equals(location.getText().toString())) {
                             myHunt.setName(name.getText().toString());
                             myHunt.setLieu(location.getText().toString());
-                            myHunt.saveHunt(myHunt.getName()+", "+ myHunt.getLieu(), myHunt);
+                            myHunt.saveHunt(myHunt.getName() + ", " + myHunt.getLieu(), myHunt);
                             Toast.makeText(getApplicationContext(), "Hunt saved", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(HuntCreatorActivity.this, MenuActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivity(i);
                         } else {
                             Toast.makeText(getApplicationContext(), "Please write a name and a location", Toast.LENGTH_SHORT).show();
                         }

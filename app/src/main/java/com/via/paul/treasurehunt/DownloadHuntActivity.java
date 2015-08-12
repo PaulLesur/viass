@@ -39,16 +39,19 @@ public class DownloadHuntActivity extends AppCompatActivity {
 
 
         ftpGetFilesList fgfl = new ftpGetFilesList();
+        huntList = new ArrayList<>();
         try {
             huntList = fgfl.execute(client).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet", Toast.LENGTH_SHORT);
         } catch (ExecutionException e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet", Toast.LENGTH_SHORT);
         }
 
         adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,huntList );
+                android.R.layout.simple_list_item_1, huntList);
         huntListView.setAdapter(adapter);
 
         huntListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -63,11 +66,10 @@ public class DownloadHuntActivity extends AppCompatActivity {
     }
 
 
-
     public class ftpGetFilesList extends AsyncTask<MyFTPClient, Void, ArrayList<String>> {
 
         MyFTPClient ftp;
-        ArrayList<String>list;
+        ArrayList<String> list;
 
         @Override
         protected ArrayList<String> doInBackground(MyFTPClient... params) {
@@ -76,10 +78,12 @@ public class DownloadHuntActivity extends AppCompatActivity {
             ftp.ftpChangeDirectory("/home/hunt/hunts/");
             list = new ArrayList<>();
 
-            for (FTPFile file: ftp.getFiles()) {
-                list.add(file.getName());
+            try {
+                for (FTPFile file : ftp.getFiles()) {
+                    list.add(file.getName());
+                }
+            }catch (NullPointerException npe){
             }
-
             return list;
         }
     }
@@ -87,7 +91,7 @@ public class DownloadHuntActivity extends AppCompatActivity {
     public class ftpDownloadFile extends AsyncTask<String, Void, Void> {
 
         MyFTPClient ftp;
-        ArrayList<String>list;
+        ArrayList<String> list;
 
         @Override
         protected Void doInBackground(String... params) {
@@ -95,14 +99,11 @@ public class DownloadHuntActivity extends AppCompatActivity {
             ftp = new MyFTPClient();
             ftp.ftpConnect("abbaye.noip.me", "hunt", "treasure", 21);
             ftp.ftpChangeDirectory("/home/hunt/hunts/");
-            ftp.ftpDownload("./"+hunt, Environment.getExternalStorageDirectory().getPath() + "/treasurehunt/" +hunt );
+            ftp.ftpDownload("./" + hunt, Environment.getExternalStorageDirectory().getPath() + "/treasurehunt/" + hunt);
 
             return null;
         }
     }
-
-
-
 
 
 }

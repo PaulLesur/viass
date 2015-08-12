@@ -30,7 +30,7 @@ public class HuntSelectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.hunt_selection_layout);
 
-        Toast.makeText(getApplicationContext(), "Long click on a hunt to upload it to the server", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Long click on a hunt to upload it to the server", Toast.LENGTH_LONG).show();
 
         gameDirectory = Environment.getExternalStorageDirectory().getPath() + "/treasurehunt";
 

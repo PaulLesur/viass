@@ -44,7 +44,7 @@ public class MyFTPClient {
         mFTPClient.configure(new FTPClientConfig(FTPClientConfig.SYST_UNIX));
         try {
             return mFTPClient.listFiles();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

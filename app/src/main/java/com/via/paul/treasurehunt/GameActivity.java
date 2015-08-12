@@ -1,7 +1,10 @@
 package com.via.paul.treasurehunt;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,7 +13,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceGroup;
 import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -83,6 +90,9 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                             .snippet("You find it !")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.treasure))
                             .position(new LatLng(myHunt.getTreasure().getLatitude(), myHunt.getTreasure().getLongitude())));
+
+                    showWinDialog();
+
                 }
 
             }
@@ -137,4 +147,25 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         polygon.setStrokeColor(Color.argb(255, 100, 50, 0));
 
     }
+
+
+    protected void showWinDialog() {
+
+        //Button button = (Button) findViewById(R.id.buttonOk);
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(GameActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.treasure_found_layout, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        // setup a dialog window
+
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+
+
 }
